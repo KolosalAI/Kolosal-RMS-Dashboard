@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FileText, ChevronLeft, ChevronRight, Database, Loader2, RefreshCw, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { kolosalApi } from "@/lib/api-config"
 
 interface DocumentInfo {
   id: string
@@ -48,7 +49,7 @@ export default function DocumentsPage() {
     setError(null)
 
     try {
-      const response = await fetch("http://127.0.0.1:8084/list_documents")
+      const response = await fetch(kolosalApi.url('listDocuments'))
 
       if (!response.ok) {
         throw new Error(`Failed to fetch document list: ${response.status} ${response.statusText}`)
@@ -80,7 +81,7 @@ export default function DocumentsPage() {
       const endIndex = startIndex + DOCUMENTS_PER_PAGE
       const pageDocumentIds = documentIds.slice(startIndex, endIndex)
 
-      const response = await fetch("http://127.0.0.1:8084/info_documents", {
+      const response = await fetch(kolosalApi.url('infoDocuments'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +141,7 @@ export default function DocumentsPage() {
     setDeletingIds((prev) => new Set(prev).add(documentId))
 
     try {
-      const response = await fetch("http://127.0.0.1:8084/remove_documents", {
+      const response = await fetch(kolosalApi.url('removeDocuments'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

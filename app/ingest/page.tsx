@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, FileText, Loader2, Trash2, Edit3, Save, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { kolosalApi, markitdownApi } from "@/lib/api-config"
 
 interface ChunkedDocument {
   id: string
@@ -140,8 +141,8 @@ export default function IngestPage() {
     const arrayBuffer = await file.arrayBuffer()
     const base64Data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
 
-    const endpoint = type === "pdf" ? "/parse_pdf" : `/parse_${type}`
-    const response = await fetch(`http://127.0.0.1:8084${endpoint}`, {
+    const endpoint = type === "pdf" ? kolosalApi.url('parsePdf') : kolosalApi.customUrl(`/parse_${type}`)
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -162,8 +163,8 @@ export default function IngestPage() {
     const formData = new FormData()
     formData.append("file", file)
 
-    const endpoint = `/parse_${type}`
-    const response = await fetch(`http://127.0.0.1:8081${endpoint}`, {
+    const endpoint = markitdownApi.customUrl(`/parse_${type}`)
+    const response = await fetch(endpoint, {
       method: "POST",
       body: formData,
     })
@@ -186,7 +187,7 @@ export default function IngestPage() {
       payload.similarity_threshold = threshold
     }
 
-    const response = await fetch("http://127.0.0.1:8084/chunking", {
+    const response = await fetch(kolosalApi.url('chunking'), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -239,7 +240,7 @@ export default function IngestPage() {
         metadata: chunk.metadata,
       }))
 
-      const response = await fetch("http://127.0.0.1:8084/add_documents", {
+      const response = await fetch(kolosalApi.url('addDocuments'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ documents }),

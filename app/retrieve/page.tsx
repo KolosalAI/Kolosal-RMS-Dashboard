@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Search, Loader2, FileText, Clock, Hash } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { kolosalApi } from "@/lib/api-config"
 
 interface Document {
   id: string
@@ -46,7 +47,7 @@ export default function RetrievePage() {
 
     try {
       const startTime = Date.now()
-      const response = await fetch("http://127.0.0.1:8084/retrieve", {
+      const response = await fetch(kolosalApi.url('retrieve'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Activity, Brain, Cpu, FileText, Database, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { kolosalApi, markitdownApi, doclingApi } from "@/lib/api-config"
 
 interface EngineStatus {
   engine_id: string
@@ -54,8 +55,9 @@ export default function Dashboard() {
     try {
       // Fetch inference server status (port 8084) - used for LLM, Embedding, and Kolosal Parser
       try {
-        console.log("Fetching inference status from: http://127.0.0.1:8084/status")
-        const inferenceRes = await fetch("http://127.0.0.1:8084/status")
+        const inferenceUrl = kolosalApi.url('status')
+        console.log("Fetching inference status from:", inferenceUrl)
+        const inferenceRes = await fetch(inferenceUrl)
         console.log("Inference response status:", inferenceRes.status)
         if (inferenceRes.ok) {
           const data = await inferenceRes.json()
@@ -72,7 +74,8 @@ export default function Dashboard() {
 
       // Fetch markitdown status
       try {
-        const markitdownRes = await fetch("http://127.0.0.1:8081/health")
+        const markitdownUrl = markitdownApi.url('health')
+        const markitdownRes = await fetch(markitdownUrl)
         if (markitdownRes.ok) {
           const data = await markitdownRes.json()
           console.log("Markitdown status response:", data)
@@ -88,7 +91,8 @@ export default function Dashboard() {
 
       // Fetch docling status
       try {
-        const doclingRes = await fetch("http://127.0.0.1:8082/health")
+        const doclingUrl = doclingApi.url('health')
+        const doclingRes = await fetch(doclingUrl)
         if (doclingRes.ok) {
           const data = await doclingRes.json()
           console.log("Docling status response:", data)
@@ -104,7 +108,8 @@ export default function Dashboard() {
 
       // Fetch documents data
       try {
-        const documentsRes = await fetch("http://127.0.0.1:8084/list_documents")
+        const documentsUrl = kolosalApi.url('listDocuments')
+        const documentsRes = await fetch(documentsUrl)
         if (documentsRes.ok) {
           const data = await documentsRes.json()
           console.log("Documents response:", data)
