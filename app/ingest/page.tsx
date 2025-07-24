@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, FileText, Loader2, Trash2, Edit3, Save, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { kolosalApi, markitdownApi } from "@/lib/api-config"
+import { kolosalApi, markitdownApi, apiConfig } from "@/lib/api-config"
 
 interface ChunkedDocument {
   id: string
@@ -179,7 +179,7 @@ export default function IngestPage() {
   const chunkDocument = async (text: string, method: ChunkingType, threshold?: number) => {
     const payload: any = {
       text: text,
-      model_name: "qwen3-embedding-0.6b",
+      model_name: apiConfig.models.embedding,
       method: method,
     }
 

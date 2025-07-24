@@ -9,6 +9,7 @@
 const DEFAULT_KOLOSAL_SERVER_URL = 'http://127.0.0.1:8084'
 const DEFAULT_MARKITDOWN_SERVER_URL = 'http://127.0.0.1:8081'
 const DEFAULT_DOCLING_SERVER_URL = 'http://127.0.0.1:8082'
+const DEFAULT_EMBEDDING_MODEL_NAME = 'qwen3-embedding-4b'
 
 // API Configuration object
 export const apiConfig = {
@@ -51,11 +52,16 @@ export const apiConfig = {
       health: '/health',
       // Add other Docling endpoints as needed
     }
+  },
+
+  // Model Configuration
+  models: {
+    embedding: process.env.NEXT_PUBLIC_EMBEDDING_MODEL_NAME || DEFAULT_EMBEDDING_MODEL_NAME,
   }
 }
 
 // Helper functions to build full URLs
-export const buildApiUrl = (service: keyof typeof apiConfig, endpoint: string): string => {
+export const buildApiUrl = (service: 'kolosal' | 'markitdown' | 'docling', endpoint: string): string => {
   const config = apiConfig[service]
   if (!config) {
     throw new Error(`Unknown service: ${service}`)

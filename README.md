@@ -23,6 +23,9 @@ The dashboard connects to several API services. You can configure the endpoints 
 
    # Docling API Configuration
    NEXT_PUBLIC_DOCLING_SERVER_URL=http://127.0.0.1:8082
+
+   # Embedding Model Configuration
+   NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
    ```
 
 ### Service Endpoints
@@ -31,13 +34,18 @@ The dashboard connects to several API services. You can configure the endpoints 
 - **MarkItDown API** (Port 8081): Document parsing service for converting various file formats to markdown
 - **Docling API** (Port 8082): Alternative document parsing service
 
+### Model Configuration
+
+- **Embedding Model**: The model used for semantic chunking and document embeddings (default: `qwen3-embedding-4b`)
+
 ### Default Configuration
 
-If no environment variables are set, the dashboard will use the default localhost URLs:
+If no environment variables are set, the dashboard will use the default localhost URLs and model settings:
 
 - Kolosal Server: `http://127.0.0.1:8084`
 - MarkItDown API: `http://127.0.0.1:8081`
 - Docling API: `http://127.0.0.1:8082`
+- Embedding Model: `qwen3-embedding-4b`
 
 ## Getting Started
 
