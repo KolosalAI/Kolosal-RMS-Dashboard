@@ -164,7 +164,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">System Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Retrieval Management System Dashboard</h1>
                 <p className="text-sm text-gray-500">Monitor the health and status of all system components</p>
               </div>
             </div>

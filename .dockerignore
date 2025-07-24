@@ -1,0 +1,63 @@
+# Ignore node_modules
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Ignore Next.js build outputs
+.next
+out
+build
+
+# Ignore environment files (will be set via Docker environment variables)
+.env
+.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore version control
+.git
+.gitignore
+
+# Ignore development files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Ignore OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Ignore logs
+logs
+*.log
+
+# Ignore temporary files
+tmp
+temp
+.tmp
+.temp
+
+# Ignore testing
+coverage
+.coverage
+.nyc_output
+
+# Ignore documentation
+README.md
+docs/
+
+# Ignore Docker files (not needed inside the container)
+Dockerfile*
+docker-compose*
+.dockerignore

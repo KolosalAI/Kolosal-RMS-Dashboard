@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Kolosal RMS Dashboard (Frontend)
+  kolosal-dashboard:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # API Configuration - Update these URLs to match your backend services
+      - NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://host.docker.internal:8084
+      - NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://host.docker.internal:8081
+      - NEXT_PUBLIC_DOCLING_SERVER_URL=http://host.docker.internal:8082
+      - NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
+    # Use host.docker.internal to access services running on the host machine
+    # If your backend services are also running in Docker, update the URLs accordingly
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  # Uncomment and modify the following services if you want to run the backend services in Docker as well
+  
+  # kolosal-server:
+  #   image: kolosal/server:latest  # Replace with your actual image
+  #   ports:
+  #     - "8084:8084"
+  #   environment:
+  #     - PORT=8084
+  #   restart: unless-stopped
+  
+  # markitdown-api:
+  #   image: markitdown/api:latest  # Replace with your actual image
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     - PORT=8081
+  #   restart: unless-stopped
+  
+  # docling-api:
+  #   image: docling/api:latest  # Replace with your actual image
+  #   ports:
+  #     - "8082:8082"
+  #   environment:
+  #     - PORT=8082
+  #   restart: unless-stopped
