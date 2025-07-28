@@ -231,7 +231,7 @@ export default function RetrievePage() {
                           <div>
                             <h4 className="font-medium text-gray-900 mb-2">Content</h4>
                             <div className="bg-gray-50 rounded-lg p-4 border">
-                              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{doc.content}</p>
+                              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{doc.text}</p>
                             </div>
                           </div>
 
