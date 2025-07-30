@@ -3,19 +3,27 @@
  * 
  * Centralized configuration for all API endpoints.
  * These values can be overridden using environment variables.
+ * 
+ * Server-side uses internal Docker network URLs
+ * Client-side uses public URLs (if needed for client-side components)
  */
 
-// Default fallback URLs if environment variables are not set
-const DEFAULT_KOLOSAL_SERVER_URL = 'http://127.0.0.1:8084'
-const DEFAULT_MARKITDOWN_SERVER_URL = 'http://127.0.0.1:8081'
-const DEFAULT_DOCLING_SERVER_URL = 'http://127.0.0.1:8082'
+// Default fallback URLs for server-side (internal Docker network)
+const DEFAULT_KOLOSAL_SERVER_URL = 'http://host.docker.internal:8084'
+const DEFAULT_MARKITDOWN_SERVER_URL = 'http://host.docker.internal:8081'
+const DEFAULT_DOCLING_SERVER_URL = 'http://host.docker.internal:8082'
 const DEFAULT_EMBEDDING_MODEL_NAME = 'qwen3-embedding-4b'
+
+// Check if we're running on the server side
+const isServerSide = typeof window === 'undefined'
 
 // API Configuration object
 export const apiConfig = {
   // Kolosal Server - Main server for LLM, embedding, and document operations
   kolosal: {
-    baseUrl: process.env.NEXT_PUBLIC_KOLOSAL_SERVER_URL || DEFAULT_KOLOSAL_SERVER_URL,
+    baseUrl: isServerSide 
+      ? (process.env.KOLOSAL_SERVER_URL || DEFAULT_KOLOSAL_SERVER_URL)
+      : (process.env.NEXT_PUBLIC_KOLOSAL_SERVER_URL || DEFAULT_KOLOSAL_SERVER_URL),
     endpoints: {
       status: '/status',
       listDocuments: '/list_documents',
@@ -34,7 +42,9 @@ export const apiConfig = {
 
   // MarkItDown API - Document parsing service
   markitdown: {
-    baseUrl: process.env.NEXT_PUBLIC_MARKITDOWN_SERVER_URL || DEFAULT_MARKITDOWN_SERVER_URL,
+    baseUrl: isServerSide 
+      ? (process.env.MARKITDOWN_SERVER_URL || DEFAULT_MARKITDOWN_SERVER_URL)
+      : (process.env.NEXT_PUBLIC_MARKITDOWN_SERVER_URL || DEFAULT_MARKITDOWN_SERVER_URL),
     endpoints: {
       health: '/health',
       parsePdf: '/parse_pdf',
@@ -47,7 +57,9 @@ export const apiConfig = {
 
   // Docling API - Alternative document parsing service
   docling: {
-    baseUrl: process.env.NEXT_PUBLIC_DOCLING_SERVER_URL || DEFAULT_DOCLING_SERVER_URL,
+    baseUrl: isServerSide 
+      ? (process.env.DOCLING_SERVER_URL || DEFAULT_DOCLING_SERVER_URL)
+      : (process.env.NEXT_PUBLIC_DOCLING_SERVER_URL || DEFAULT_DOCLING_SERVER_URL),
     endpoints: {
       health: '/health',
       // Add other Docling endpoints as needed

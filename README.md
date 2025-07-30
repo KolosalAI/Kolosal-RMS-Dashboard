@@ -2,31 +2,37 @@
 
 Dashboard for user interaction with Kolosal Retrieval Management System
 
+## Architecture
+
+This dashboard uses **Next.js Server Components** to fetch data server-side, making it suitable for deployment in Docker containers where API endpoints are only accessible within the internal network.
+
 ## Environment Configuration
 
-The dashboard connects to several API services. You can configure the endpoints by copying the environment template and customizing the URLs:
+The dashboard connects to several API services. Configure the endpoints using environment variables:
 
-1. Copy the environment template:
+### Server-Side Configuration (Recommended)
 
-   ```bash
-   cp .env.local.example .env.local
-   ```
+For Docker deployments, use server-side environment variables (without `NEXT_PUBLIC_` prefix):
 
-2. Edit `.env.local` to customize the API endpoints:
+```env
+# Server-side API Configuration (used for server-side rendering)
+KOLOSAL_SERVER_URL=http://host.docker.internal:8084
+MARKITDOWN_SERVER_URL=http://host.docker.internal:8081
+DOCLING_SERVER_URL=http://host.docker.internal:8082
+EMBEDDING_MODEL_NAME=qwen3-embedding-4b
+```
 
-   ```env
-   # Kolosal Server Configuration (Main server for LLM, embedding, and document operations)
-   NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://127.0.0.1:8084
+### Client-Side Configuration (Optional)
 
-   # MarkItDown API Configuration  
-   NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://127.0.0.1:8081
+For client-side components or external API access:
 
-   # Docling API Configuration
-   NEXT_PUBLIC_DOCLING_SERVER_URL=http://127.0.0.1:8082
-
-   # Embedding Model Configuration
-   NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
-   ```
+```env
+# Client-side API Configuration (used for client-side components)
+NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://localhost:8084
+NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://localhost:8081
+NEXT_PUBLIC_DOCLING_SERVER_URL=http://localhost:8082
+NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
+```
 
 ### Service Endpoints
 
@@ -34,20 +40,18 @@ The dashboard connects to several API services. You can configure the endpoints 
 - **MarkItDown API** (Port 8081): Document parsing service for converting various file formats to markdown
 - **Docling API** (Port 8082): Alternative document parsing service
 
-### Model Configuration
-
-- **Embedding Model**: The model used for semantic chunking and document embeddings (default: `qwen3-embedding-4b`)
-
 ### Default Configuration
 
-If no environment variables are set, the dashboard will use the default localhost URLs and model settings:
+If no environment variables are set, the dashboard will use default Docker-compatible URLs:
 
-- Kolosal Server: `http://127.0.0.1:8084`
-- MarkItDown API: `http://127.0.0.1:8081`
-- Docling API: `http://127.0.0.1:8082`
+- Kolosal Server: `http://host.docker.internal:8084`
+- MarkItDown API: `http://host.docker.internal:8081`
+- Docling API: `http://host.docker.internal:8082`
 - Embedding Model: `qwen3-embedding-4b`
 
 ## Getting Started
+
+### Development
 
 1. Install dependencies:
 
@@ -58,6 +62,7 @@ If no environment variables are set, the dashboard will use the default localhos
 2. Configure environment (optional):
 
    ```bash
+   # Create environment file for local development
    cp .env.local.example .env.local
    # Edit .env.local as needed
    ```
@@ -95,10 +100,10 @@ If no environment variables are set, the dashboard will use the default localhos
 
    ```bash
    docker run -p 3000:3000 \
-     -e NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://host.docker.internal:8084 \
-     -e NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://host.docker.internal:8081 \
-     -e NEXT_PUBLIC_DOCLING_SERVER_URL=http://host.docker.internal:8082 \
-     -e NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b \
+     -e KOLOSAL_SERVER_URL=http://host.docker.internal:8084 \
+     -e MARKITDOWN_SERVER_URL=http://host.docker.internal:8081 \
+     -e DOCLING_SERVER_URL=http://host.docker.internal:8082 \
+     -e EMBEDDING_MODEL_NAME=qwen3-embedding-4b \
      kolosal-rms-dashboard:latest
    ```
 
@@ -128,21 +133,27 @@ For easier management, use Docker Compose:
 
 ### Docker Environment Configuration
 
-When running in Docker, configure the API endpoints using environment variables:
+When running in Docker, configure the API endpoints using server-side environment variables:
 
 ```bash
-# Backend Service URLs (adjust to your setup)
-NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://host.docker.internal:8084
-NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://host.docker.internal:8081
-NEXT_PUBLIC_DOCLING_SERVER_URL=http://host.docker.internal:8082
+# Server-side Backend Service URLs (for server-side rendering)
+KOLOSAL_SERVER_URL=http://host.docker.internal:8084
+MARKITDOWN_SERVER_URL=http://host.docker.internal:8081
+DOCLING_SERVER_URL=http://host.docker.internal:8082
 
 # Model Configuration
-NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
+EMBEDDING_MODEL_NAME=qwen3-embedding-4b
+
+# Optional: Client-side URLs (for any client-side components)
+NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://localhost:8084
+NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://localhost:8081
+NEXT_PUBLIC_DOCLING_SERVER_URL=http://localhost:8082
 ```
 
 **Note:**
 
-- Use `host.docker.internal` to access services running on your host machine
+- Server-side variables (without `NEXT_PUBLIC_`) are used for API calls made from the Next.js server
+- Use `host.docker.internal` to access services running on your host machine from within Docker
 - If your backend services are also running in Docker containers, use the container names or service names instead
 - Update the `docker-compose.yml` file to include your backend services if needed
 
@@ -164,8 +175,23 @@ For production deployment:
      --restart unless-stopped \
      -p 3000:3000 \
      -e NODE_ENV=production \
-     -e NEXT_PUBLIC_KOLOSAL_SERVER_URL=https://your-kolosal-server.com \
-     -e NEXT_PUBLIC_MARKITDOWN_SERVER_URL=https://your-markitdown-api.com \
-     -e NEXT_PUBLIC_DOCLING_SERVER_URL=https://your-docling-api.com \
+     -e KOLOSAL_SERVER_URL=https://your-kolosal-server.com \
+     -e MARKITDOWN_SERVER_URL=https://your-markitdown-api.com \
+     -e DOCLING_SERVER_URL=https://your-docling-api.com \
      kolosal-rms-dashboard:production
    ```
+
+## Features
+
+- **Server-Side Rendering**: Dashboard data is fetched server-side, making it compatible with Docker environments where APIs are only accessible internally
+- **Real-time Status Monitoring**: Monitor the health and status of all system components
+- **Automatic Refresh**: Server-side data fetching with client-side refresh capability
+- **Docker-Ready**: Optimized for Docker deployments with proper environment variable configuration
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Architecture Notes
+
+- **Server Components**: The main dashboard uses Next.js Server Components for data fetching
+- **Client Components**: Only interactive elements (like the refresh button) use client-side JavaScript
+- **API Isolation**: API calls are made server-side, so they work within Docker networks
+- **Optimized Performance**: Server-side rendering reduces client-side JavaScript and improves load times

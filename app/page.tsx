@@ -1,11 +1,8 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Activity, Brain, Cpu, FileText, Database, RefreshCw } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Activity, Brain, Cpu, FileText, Database } from "lucide-react"
+import { RefreshButton } from "@/components/refresh-button"
 import { kolosalApi, markitdownApi, doclingApi } from "@/lib/api-config"
 
 interface EngineStatus {
@@ -41,99 +38,101 @@ interface DocumentsResponse {
   total_count: number
 }
 
-export default function Dashboard() {
-  const [inferenceStatus, setInferenceStatus] = useState<InferenceStatus | null>(null)
-  const [markitdownStatus, setMarkitdownStatus] = useState<ServiceStatus | null>(null)
-  const [doclingStatus, setDoclingStatus] = useState<ServiceStatus | null>(null)
-  const [documentsData, setDocumentsData] = useState<DocumentsResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
-
-  const fetchStatuses = async () => {
-    console.log("Starting fetchStatuses...")
-    setLoading(true)
-    try {
-      // Fetch inference server status (port 8084) - used for LLM, Embedding, and Kolosal Parser
-      try {
-        const inferenceUrl = kolosalApi.url('status')
-        console.log("Fetching inference status from:", inferenceUrl)
-        const inferenceRes = await fetch(inferenceUrl)
-        console.log("Inference response status:", inferenceRes.status)
-        if (inferenceRes.ok) {
-          const data = await inferenceRes.json()
-          console.log("Inference status response:", data)
-          setInferenceStatus(data)
-        } else {
-          console.error("Inference status failed:", inferenceRes.status, inferenceRes.statusText)
-          setInferenceStatus({ status: "unavailable" } as InferenceStatus)
+async function fetchStatuses() {
+  console.log("Server: Starting fetchStatuses...")
+  
+  try {
+    const results = await Promise.allSettled([
+      // Fetch inference server status (port 8084)
+      fetch(kolosalApi.url('status'), { 
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      }).then(async (res) => {
+        console.log(`Server: Inference status response: ${res.status}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Server: Inference status data:", data)
+          return data
         }
-      } catch (error) {
-        console.error("Failed to fetch inference status:", error)
-        setInferenceStatus({ status: "unavailable" } as InferenceStatus)
-      }
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      }).catch((error) => {
+        console.error("Server: Failed to fetch inference status:", error)
+        return { status: "unavailable" }
+      }),
 
       // Fetch markitdown status
-      try {
-        const markitdownUrl = markitdownApi.url('health')
-        const markitdownRes = await fetch(markitdownUrl)
-        if (markitdownRes.ok) {
-          const data = await markitdownRes.json()
-          console.log("Markitdown status response:", data)
-          setMarkitdownStatus(data)
-        } else {
-          console.error("Markitdown status failed:", markitdownRes.status, markitdownRes.statusText)
-          setMarkitdownStatus({ status: "unavailable", service: "markitdown-api" })
+      fetch(markitdownApi.url('health'), { 
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      }).then(async (res) => {
+        console.log(`Server: Markitdown status response: ${res.status}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Server: Markitdown status data:", data)
+          return data
         }
-      } catch (error) {
-        console.error("Failed to fetch markitdown status:", error)
-        setMarkitdownStatus({ status: "unavailable", service: "markitdown-api" })
-      }
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      }).catch((error) => {
+        console.error("Server: Failed to fetch markitdown status:", error)
+        return { status: "unavailable", service: "markitdown-api" }
+      }),
 
       // Fetch docling status
-      try {
-        const doclingUrl = doclingApi.url('health')
-        const doclingRes = await fetch(doclingUrl)
-        if (doclingRes.ok) {
-          const data = await doclingRes.json()
-          console.log("Docling status response:", data)
-          setDoclingStatus(data)
-        } else {
-          console.error("Docling status failed:", doclingRes.status, doclingRes.statusText)
-          setDoclingStatus({ status: "unavailable", service: "docling-api" })
+      fetch(doclingApi.url('health'), { 
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      }).then(async (res) => {
+        console.log(`Server: Docling status response: ${res.status}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Server: Docling status data:", data)
+          return data
         }
-      } catch (error) {
-        console.error("Failed to fetch docling status:", error)
-        setDoclingStatus({ status: "unavailable", service: "docling-api" })
-      }
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      }).catch((error) => {
+        console.error("Server: Failed to fetch docling status:", error)
+        return { status: "unavailable", service: "docling-api" }
+      }),
 
       // Fetch documents data
-      try {
-        const documentsUrl = kolosalApi.url('listDocuments')
-        const documentsRes = await fetch(documentsUrl)
-        if (documentsRes.ok) {
-          const data = await documentsRes.json()
-          console.log("Documents response:", data)
-          setDocumentsData(data)
-        } else {
-          console.error("Documents fetch failed:", documentsRes.status, documentsRes.statusText)
-          setDocumentsData(null)
+      fetch(kolosalApi.url('listDocuments'), { 
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      }).then(async (res) => {
+        console.log(`Server: Documents status response: ${res.status}`)
+        if (res.ok) {
+          const data = await res.json()
+          console.log("Server: Documents data:", data)
+          return data
         }
-      } catch (error) {
-        console.error("Failed to fetch documents data:", error)
-        setDocumentsData(null)
-      }
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      }).catch((error) => {
+        console.error("Server: Failed to fetch documents data:", error)
+        return null
+      })
+    ])
 
-      setLastUpdated(new Date())
-    } finally {
-      setLoading(false)
+    return {
+      inferenceStatus: results[0].status === 'fulfilled' ? results[0].value : null,
+      markitdownStatus: results[1].status === 'fulfilled' ? results[1].value : null,
+      doclingStatus: results[2].status === 'fulfilled' ? results[2].value : null,
+      documentsData: results[3].status === 'fulfilled' ? results[3].value : null,
+      lastUpdated: new Date().toISOString()
+    }
+  } catch (error) {
+    console.error("Server: Failed to fetch statuses:", error)
+    return {
+      inferenceStatus: null,
+      markitdownStatus: null,
+      doclingStatus: null,
+      documentsData: null,
+      lastUpdated: new Date().toISOString()
     }
   }
+}
 
-  useEffect(() => {
-    fetchStatuses()
-    const interval = setInterval(fetchStatuses, 30000) // Refresh every 30 seconds
-    return () => clearInterval(interval)
-  }, [])
+export default async function Dashboard() {
+  const { inferenceStatus, markitdownStatus, doclingStatus, documentsData, lastUpdated } = await fetchStatuses()
 
   const getStatusColor = (status: string | null | undefined) => {
     if (!status) return "bg-red-500"
@@ -149,11 +148,11 @@ export default function Dashboard() {
   }
 
   const getLLMEngines = () => {
-    return inferenceStatus?.engines?.filter((engine) => !engine.engine_id.includes("embedding")) || []
+    return inferenceStatus?.engines?.filter((engine: EngineStatus) => !engine.engine_id.includes("embedding")) || []
   }
 
   const getEmbeddingEngines = () => {
-    return inferenceStatus?.engines?.filter((engine) => engine.engine_id.includes("embedding")) || []
+    return inferenceStatus?.engines?.filter((engine: EngineStatus) => engine.engine_id.includes("embedding")) || []
   }
 
   return (
@@ -168,13 +167,7 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-500">Monitor the health and status of all system components</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500">Last updated: {lastUpdated.toLocaleTimeString()}</div>
-              <Button onClick={fetchStatuses} disabled={loading} variant="outline" size="sm">
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-                Refresh
-              </Button>
-            </div>
+            <RefreshButton lastUpdated={lastUpdated} />
           </div>
         </header>
 
@@ -198,7 +191,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="space-y-2">
-                  {getLLMEngines().map((engine) => (
+                  {getLLMEngines().map((engine: EngineStatus) => (
                     <div key={engine.engine_id} className="flex items-center justify-between text-sm">
                       <span className="text-gray-600 truncate">{engine.engine_id}</span>
                       <Badge
@@ -232,7 +225,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="space-y-2">
-                  {getEmbeddingEngines().map((engine) => (
+                  {getEmbeddingEngines().map((engine: EngineStatus) => (
                     <div key={engine.engine_id} className="flex items-center justify-between text-sm">
                       <span className="text-gray-600 truncate">{engine.engine_id}</span>
                       <Badge
