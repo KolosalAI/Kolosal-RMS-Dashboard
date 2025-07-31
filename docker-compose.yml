@@ -7,10 +7,17 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # API Configuration - Update these URLs to match your backend services
-      - NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://host.docker.internal:8084
-      - NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://host.docker.internal:8081
-      - NEXT_PUBLIC_DOCLING_SERVER_URL=http://host.docker.internal:8082
+      # Server-side API Configuration - These are used for server-side rendering
+      # Update these URLs to match your backend services in the Docker network
+      - KOLOSAL_SERVER_URL=http://host.docker.internal:8084
+      - MARKITDOWN_SERVER_URL=http://host.docker.internal:8081
+      - DOCLING_SERVER_URL=http://host.docker.internal:8082
+      - EMBEDDING_MODEL_NAME=qwen3-embedding-4b
+      
+      # Client-side fallbacks (optional, for any client-side components that might need them)
+      - NEXT_PUBLIC_KOLOSAL_SERVER_URL=http://localhost:8084
+      - NEXT_PUBLIC_MARKITDOWN_SERVER_URL=http://localhost:8081
+      - NEXT_PUBLIC_DOCLING_SERVER_URL=http://localhost:8082
       - NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
     # Use host.docker.internal to access services running on the host machine
     # If your backend services are also running in Docker, update the URLs accordingly
