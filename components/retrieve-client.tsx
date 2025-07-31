@@ -11,9 +11,10 @@ import { Search, Loader2, FileText, Clock, Hash } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 interface Document {
-  id: string
-  content: string
-  metadata: Record<string, any>
+  id?: string
+  content?: string
+  text?: string  // API might return 'text' instead of 'content'
+  metadata?: Record<string, any>
   score?: number
 }
 
@@ -59,7 +60,31 @@ export default function RetrieveClient() {
       }
 
       const data = await response.json()
-      setResults(data)
+      
+      // Validate response structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response format')
+      }
+      
+      // Ensure documents array exists
+      if (!data.documents) {
+        data.documents = []
+      }
+      
+      // Ensure documents is an array
+      if (!Array.isArray(data.documents)) {
+        data.documents = []
+      }
+      
+      // Set default values for missing fields
+      const validatedData = {
+        documents: data.documents,
+        query: data.query || query.trim(),
+        total_results: data.total_results || data.documents.length,
+        elapsed_time: data.elapsed_time || 0
+      }
+      
+      setResults(validatedData)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to retrieve documents")
     } finally {
@@ -85,8 +110,14 @@ export default function RetrieveClient() {
   }
 
   const truncateText = (text: string, maxLength: number = 300) => {
+    if (!text || typeof text !== 'string') return ""
     if (text.length <= maxLength) return text
     return text.substring(0, maxLength) + "..."
+  }
+
+  // Helper function to get document content (handles both 'content' and 'text' fields)
+  const getDocumentContent = (doc: Document): string => {
+    return doc.content || doc.text || ""
   }
 
   return (
@@ -179,18 +210,18 @@ export default function RetrieveClient() {
                   <div className="flex items-center gap-2">
                     <Hash className="h-4 w-4 text-gray-500" />
                     <span className="text-sm text-gray-600">
-                      <strong>{results.total_results}</strong> results found
+                      <strong>{results.total_results || 0}</strong> results found
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-gray-500" />
                     <span className="text-sm text-gray-600">
-                      <strong>{formatElapsedTime(results.elapsed_time)}</strong>
+                      <strong>{formatElapsedTime(results.elapsed_time || 0)}</strong>
                     </span>
                   </div>
                 </div>
                 <Badge variant="secondary" className="text-xs">
-                  Query: "{results.query}"
+                  Query: "{results.query || ""}"
                 </Badge>
               </div>
             </CardContent>
@@ -198,7 +229,7 @@ export default function RetrieveClient() {
 
           {/* Results List */}
           <div className="space-y-4">
-            {results.documents.length === 0 ? (
+            {!results.documents || results.documents.length === 0 ? (
               <Card className="border border-gray-200 shadow-sm">
                 <CardContent className="pt-6 text-center">
                   <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -209,7 +240,9 @@ export default function RetrieveClient() {
                 </CardContent>
               </Card>
             ) : (
-              results.documents.map((doc, index) => (
+              results.documents
+                .filter(doc => doc && (doc.content || doc.text)) // Filter out invalid documents
+                .map((doc, index) => (
                 <Card key={doc.id || index} className="border border-gray-200 shadow-sm">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -219,7 +252,7 @@ export default function RetrieveClient() {
                       </CardTitle>
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary" className="text-xs">
-                          ID: {doc.id}
+                          ID: {doc.id || "N/A"}
                         </Badge>
                         <Badge
                           variant="outline"
@@ -243,15 +276,17 @@ export default function RetrieveClient() {
                         <Label className="text-sm font-medium text-gray-700">Content</Label>
                         <div className="mt-1 bg-gray-50 rounded-lg p-4 border">
                           <p className="text-sm text-gray-800 whitespace-pre-wrap">
-                            {truncateText(doc.content)}
+                            {truncateText(getDocumentContent(doc))}
                           </p>
-                          {doc.content.length > 300 && (
+                          {getDocumentContent(doc).length > 300 && (
                             <details className="mt-2">
                               <summary className="cursor-pointer text-blue-600 hover:text-blue-800 text-sm">
                                 Show full content
                               </summary>
                               <div className="mt-2 pt-2 border-t border-gray-200">
-                                <p className="text-sm text-gray-800 whitespace-pre-wrap">{doc.content}</p>
+                                <p className="text-sm text-gray-800 whitespace-pre-wrap">
+                                  {getDocumentContent(doc)}
+                                </p>
                               </div>
                             </details>
                           )}
