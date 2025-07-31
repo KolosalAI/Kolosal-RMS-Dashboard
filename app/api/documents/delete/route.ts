@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { kolosalApi } from '@/lib/api-config'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export async function DELETE(request: NextRequest) {
   try {
     const { document_ids } = await request.json()

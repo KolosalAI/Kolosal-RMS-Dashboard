@@ -1,6 +1,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import DocumentsClient from "@/components/documents-client"
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default function DocumentsPage() {
   return (
     <div className="flex h-screen bg-gray-50">

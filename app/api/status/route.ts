@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { kolosalApi, markitdownApi, doclingApi } from '@/lib/api-config'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 interface EngineStatus {
   engine_id: string
   status: string

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { kolosalApi } from '@/lib/api-config'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
-    const response = await fetch(kolosalApi.url('listDocuments'), {
-      cache: 'no-store',
-      next: { revalidate: 0 }
-    })
+    const response = await fetch(kolosalApi.url('listDocuments'))
 
     if (!response.ok) {
       throw new Error(`Failed to fetch document list: ${response.statusText}`)

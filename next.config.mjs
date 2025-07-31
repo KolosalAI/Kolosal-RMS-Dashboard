@@ -9,7 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  output: 'standalone',
+  // output: 'standalone', // Commented out due to Windows symlink permission issues
 }
 
 export default nextConfig

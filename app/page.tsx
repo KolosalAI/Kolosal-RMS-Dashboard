@@ -5,6 +5,9 @@ import { Activity, Brain, Cpu, FileText, Database } from "lucide-react"
 import { RefreshButton } from "@/components/refresh-button"
 import { kolosalApi, markitdownApi, doclingApi } from "@/lib/api-config"
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 interface EngineStatus {
   engine_id: string
   status: string
@@ -44,10 +47,7 @@ async function fetchStatuses() {
   try {
     const results = await Promise.allSettled([
       // Fetch inference server status (port 8084)
-      fetch(kolosalApi.url('status'), { 
-        cache: 'no-store',
-        next: { revalidate: 0 }
-      }).then(async (res) => {
+      fetch(kolosalApi.url('status')).then(async (res) => {
         console.log(`Server: Inference status response: ${res.status}`)
         if (res.ok) {
           const data = await res.json()
@@ -61,10 +61,7 @@ async function fetchStatuses() {
       }),
 
       // Fetch markitdown status
-      fetch(markitdownApi.url('health'), { 
-        cache: 'no-store',
-        next: { revalidate: 0 }
-      }).then(async (res) => {
+      fetch(markitdownApi.url('health')).then(async (res) => {
         console.log(`Server: Markitdown status response: ${res.status}`)
         if (res.ok) {
           const data = await res.json()
@@ -78,10 +75,7 @@ async function fetchStatuses() {
       }),
 
       // Fetch docling status
-      fetch(doclingApi.url('health'), { 
-        cache: 'no-store',
-        next: { revalidate: 0 }
-      }).then(async (res) => {
+      fetch(doclingApi.url('health')).then(async (res) => {
         console.log(`Server: Docling status response: ${res.status}`)
         if (res.ok) {
           const data = await res.json()
@@ -95,10 +89,7 @@ async function fetchStatuses() {
       }),
 
       // Fetch documents data
-      fetch(kolosalApi.url('listDocuments'), { 
-        cache: 'no-store',
-        next: { revalidate: 0 }
-      }).then(async (res) => {
+      fetch(kolosalApi.url('listDocuments')).then(async (res) => {
         console.log(`Server: Documents status response: ${res.status}`)
         if (res.ok) {
           const data = await res.json()

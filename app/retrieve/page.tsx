@@ -1,6 +1,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import RetrieveClient from "@/components/retrieve-client"
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default function RetrievePage() {
   return (
     <div className="flex h-screen bg-gray-50">

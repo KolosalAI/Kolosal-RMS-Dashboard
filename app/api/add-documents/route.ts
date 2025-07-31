@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { kolosalApi } from '@/lib/api-config'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const { documents } = await request.json()
