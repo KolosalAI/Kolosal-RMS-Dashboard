@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const response = await fetch(kolosalApi.url('infoDocuments'), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ document_ids }),
+      body: JSON.stringify({ ids: document_ids }),
     })
 
     if (!response.ok) {
