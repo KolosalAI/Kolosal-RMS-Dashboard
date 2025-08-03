@@ -61,13 +61,10 @@ export async function POST(request: NextRequest) {
     } else if (parserType === "docling") {
       // Docling integration - Advanced document parsing with OCR and table structure recognition
       // Uses Docling API v1.1.0 for high-quality document conversion to Markdown
-      console.log("Parsing with Docling for file:", file.name)
-      
       const parseFormData = new FormData()
       parseFormData.append("files", file)
       
       // Set Docling-specific parameters for optimal parsing
-      // According to the API docs, arrays should be sent as multiple parameters with the same name
       parseFormData.append("to_formats", "md")
       parseFormData.append("to_formats", "json")
       parseFormData.append("do_ocr", "true")
@@ -79,21 +76,12 @@ export async function POST(request: NextRequest) {
       parseFormData.append("target_type", "inbody")
 
       const endpoint = doclingApi.url('processFile')
-      console.log("Docling endpoint:", endpoint)
-      
-      // Debug: Log the form data being sent
-      console.log("Docling FormData parameters:");
-      for (const [key, value] of parseFormData.entries()) {
-        console.log(`  ${key}: ${typeof value === 'object' && value.constructor.name === 'File' ? `[File: ${value.name}]` : value}`);
-      }
-      
       const response = await fetch(endpoint, {
         method: "POST",
         body: parseFormData,
       })
 
       if (!response.ok) {
-        // Try to get more detailed error information from the response
         let errorMessage = `Failed to parse with Docling: ${response.statusText}`;
         try {
           const errorData = await response.json();
@@ -103,12 +91,10 @@ export async function POST(request: NextRequest) {
         } catch (e) {
           // If we can't parse the error response, just use the status text
         }
-        console.error("Docling API error:", errorMessage);
         throw new Error(errorMessage);
       }
 
       const result = await response.json()
-      console.log("Docling response:", { status: result.status, hasDocument: !!result.document })
       
       // Handle Docling response format
       if (result.document) {
@@ -120,7 +106,6 @@ export async function POST(request: NextRequest) {
           timings: result.timings,
           ...(result.document.json_content?.metadata || {})
         }
-        console.log("Parsed text length:", parsedText.length)
       } else if (result.status === "pending") {
         throw new Error("Docling parsing is still in progress. Please try again later.")
       } else {
