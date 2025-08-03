@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       // Debug: Log the form data being sent
       console.log("Docling FormData parameters:");
       for (const [key, value] of parseFormData.entries()) {
-        console.log(`  ${key}: ${value instanceof File ? `[File: ${value.name}]` : value}`);
+        console.log(`  ${key}: ${typeof value === 'object' && value.constructor.name === 'File' ? `[File: ${value.name}]` : value}`);
       }
       
       const response = await fetch(endpoint, {
