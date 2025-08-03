@@ -67,16 +67,25 @@ export async function POST(request: NextRequest) {
       parseFormData.append("files", file)
       
       // Set Docling-specific parameters for optimal parsing
-      parseFormData.append("to_formats", JSON.stringify(["md", "json"]))
+      // According to the API docs, arrays should be sent as multiple parameters with the same name
+      parseFormData.append("to_formats", "md")
+      parseFormData.append("to_formats", "json")
       parseFormData.append("do_ocr", "true")
       parseFormData.append("do_table_structure", "true")
       parseFormData.append("include_images", "true")
       parseFormData.append("table_mode", "accurate")
       parseFormData.append("pdf_backend", "dlparse_v4")
       parseFormData.append("image_export_mode", "embedded")
+      parseFormData.append("target_type", "inbody")
 
       const endpoint = doclingApi.url('processFile')
       console.log("Docling endpoint:", endpoint)
+      
+      // Debug: Log the form data being sent
+      console.log("Docling FormData parameters:");
+      for (const [key, value] of parseFormData.entries()) {
+        console.log(`  ${key}: ${value instanceof File ? `[File: ${value.name}]` : value}`);
+      }
       
       const response = await fetch(endpoint, {
         method: "POST",
@@ -84,7 +93,18 @@ export async function POST(request: NextRequest) {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to parse with Docling: ${response.statusText}`)
+        // Try to get more detailed error information from the response
+        let errorMessage = `Failed to parse with Docling: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.detail) {
+            errorMessage += ` - ${JSON.stringify(errorData.detail)}`;
+          }
+        } catch (e) {
+          // If we can't parse the error response, just use the status text
+        }
+        console.error("Docling API error:", errorMessage);
+        throw new Error(errorMessage);
       }
 
       const result = await response.json()
