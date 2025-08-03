@@ -128,7 +128,14 @@ export default async function Dashboard() {
   const getStatusColor = (status: string | null | undefined) => {
     if (!status) return "bg-red-500"
     if (status === "unavailable") return "bg-gray-400"
-    return status === "healthy" || status === "loaded" ? "bg-green-500" : "bg-red-500"
+    return status === "healthy" || status === "loaded" || status === "ok" ? "bg-green-500" : "bg-red-500"
+  }
+
+  const getStatusText = (status: string | null | undefined) => {
+    if (!status) return "Unknown"
+    if (status === "unavailable") return "Service Unavailable"
+    if (status === "ok") return "Healthy"
+    return status
   }
 
   const getEngineStatusColor = (status: string) => {
@@ -176,9 +183,7 @@ export default async function Dashboard() {
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-3 h-3 rounded-full ${getStatusColor(inferenceStatus?.status)}`} />
                   <span className="font-medium">
-                    {inferenceStatus?.status === "unavailable"
-                      ? "Service Unavailable"
-                      : inferenceStatus?.status || "Unknown"}
+                    {getStatusText(inferenceStatus?.status)}
                   </span>
                 </div>
                 <div className="space-y-2">
@@ -210,9 +215,7 @@ export default async function Dashboard() {
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-3 h-3 rounded-full ${getStatusColor(inferenceStatus?.status)}`} />
                   <span className="font-medium">
-                    {inferenceStatus?.status === "unavailable"
-                      ? "Service Unavailable"
-                      : inferenceStatus?.status || "Unknown"}
+                    {getStatusText(inferenceStatus?.status)}
                   </span>
                 </div>
                 <div className="space-y-2">
@@ -246,9 +249,7 @@ export default async function Dashboard() {
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-3 h-3 rounded-full ${getStatusColor(inferenceStatus?.status)}`} />
                   <span className="font-medium">
-                    {inferenceStatus?.status === "unavailable"
-                      ? "Service Unavailable"
-                      : inferenceStatus?.status || "Unknown"}
+                    {getStatusText(inferenceStatus?.status)}
                   </span>
                 </div>
                 <div className="text-sm text-gray-600">
@@ -270,9 +271,7 @@ export default async function Dashboard() {
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-3 h-3 rounded-full ${getStatusColor(markitdownStatus?.status)}`} />
                   <span className="font-medium">
-                    {markitdownStatus?.status === "unavailable"
-                      ? "Service Unavailable"
-                      : markitdownStatus?.status || "Unknown"}
+                    {getStatusText(markitdownStatus?.status)}
                   </span>
                 </div>
                 <div className="text-sm text-gray-600">
@@ -294,9 +293,7 @@ export default async function Dashboard() {
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-3 h-3 rounded-full ${getStatusColor(doclingStatus?.status)}`} />
                   <span className="font-medium">
-                    {doclingStatus?.status === "unavailable"
-                      ? "Service Unavailable"
-                      : doclingStatus?.status || "Unknown"}
+                    {getStatusText(doclingStatus?.status)}
                   </span>
                 </div>
                 <div className="text-sm text-gray-600">
