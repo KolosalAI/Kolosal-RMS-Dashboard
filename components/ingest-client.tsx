@@ -120,6 +120,13 @@ export default function IngestClient() {
             markdown_content: parsedText,
             metadata: parsedMetadata
           })
+        } else if (parserType === "docling") {
+          setParsedDocument({
+            filename: parseResult.filename,
+            title: parseResult.metadata?.title || parseResult.filename,
+            markdown_content: parsedText,
+            metadata: parsedMetadata
+          })
         }
       }
 
@@ -329,11 +336,7 @@ export default function IngestClient() {
                   <SelectContent>
                     {documentType !== "text" && <SelectItem value="kolosal">Kolosal Parse</SelectItem>}
                     {documentType !== "text" && <SelectItem value="markitdown">MarkItDown</SelectItem>}
-                    {documentType !== "text" && (
-                      <SelectItem value="docling" disabled>
-                        Docling (Not supported yet)
-                      </SelectItem>
-                    )}
+                    {documentType !== "text" && <SelectItem value="docling">Docling</SelectItem>}
                     {documentType === "text" && <SelectItem value="none">No parsing needed</SelectItem>}
                   </SelectContent>
                 </Select>

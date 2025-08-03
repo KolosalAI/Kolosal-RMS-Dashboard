@@ -38,7 +38,7 @@ NEXT_PUBLIC_EMBEDDING_MODEL_NAME=qwen3-embedding-4b
 
 - **Kolosal Server** (Port 8084): Main server that handles LLM inference, embeddings, document storage, and retrieval
 - **MarkItDown API** (Port 8081): Document parsing service for converting various file formats to markdown
-- **Docling API** (Port 8082): Alternative document parsing service
+- **Docling API** (Port 8082): Advanced document parsing service with OCR, table structure recognition, and image processing
 
 ### Default Configuration
 
@@ -185,6 +185,12 @@ For production deployment:
 
 - **Server-Side Rendering**: Dashboard data is fetched server-side, making it compatible with Docker environments where APIs are only accessible internally
 - **Real-time Status Monitoring**: Monitor the health and status of all system components
+- **Multi-Parser Document Processing**: Support for multiple document parsing engines:
+  - **Kolosal Parser**: Native parsing for various document formats
+  - **MarkItDown**: Microsoft's document parsing service
+  - **Docling**: Advanced document parsing with OCR, table structure recognition, and image processing
+- **Advanced Document Ingestion**: Upload and process documents with chunking strategies (regular, semantic, or no chunking)
+- **Intelligent Retrieval**: Search and retrieve relevant document chunks using semantic similarity
 - **Automatic Refresh**: Server-side data fetching with client-side refresh capability
 - **Docker-Ready**: Optimized for Docker deployments with proper environment variable configuration
 - **Responsive Design**: Works on desktop and mobile devices

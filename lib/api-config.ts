@@ -55,14 +55,19 @@ export const apiConfig = {
     }
   },
 
-  // Docling API - Alternative document parsing service
+  // Docling API - Advanced document parsing service with OCR and structure recognition
   docling: {
     baseUrl: isServerSide 
       ? (process.env.DOCLING_SERVER_URL || DEFAULT_DOCLING_SERVER_URL)
       : (process.env.NEXT_PUBLIC_DOCLING_SERVER_URL || DEFAULT_DOCLING_SERVER_URL),
     endpoints: {
       health: '/health',
-      // Add other Docling endpoints as needed
+      processFile: '/v1/convert/file',
+      processFileAsync: '/v1/convert/file/async',
+      processUrl: '/v1/convert/source',
+      processUrlAsync: '/v1/convert/source/async',
+      taskStatus: '/v1/status/poll',
+      taskResult: '/v1/result',
     }
   },
 
