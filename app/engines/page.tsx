@@ -21,7 +21,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { Trash2, Plus, RefreshCw, Search, Loader2, AlertCircle, CheckCircle, Clock, Zap } from "lucide-react"
-import { kolosalApi } from "@/lib/api-config"
 
 // Environment variables with fallback defaults - using proper client-side access
 const HUGGINGFACE_API_URL = process.env.NEXT_PUBLIC_HUGGINGFACE_API_URL || "https://huggingface.co/api"
@@ -129,7 +128,7 @@ export default function EngineConfigurationPage() {
         try {
             setLoading(true)
             setError(null)
-            const response = await fetch(kolosalApi.url('status'))
+            const response = await fetch('/api/engines')
             if (!response.ok) {
                 throw new Error("Failed to fetch server status")
             }
@@ -204,7 +203,7 @@ export default function EngineConfigurationPage() {
         }
 
         try {
-            const response = await fetch(kolosalApi.customUrl(`/models/${encodeURIComponent(engineId)}`), {
+            const response = await fetch(`/api/engines/${encodeURIComponent(engineId)}`, {
                 method: "DELETE",
             })
 
@@ -220,7 +219,7 @@ export default function EngineConfigurationPage() {
 
     const addModel = async () => {
         try {
-            const response = await fetch(kolosalApi.url('models'), {
+            const response = await fetch('/api/engines', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -230,7 +229,7 @@ export default function EngineConfigurationPage() {
 
             if (!response.ok) {
                 const errorData = await response.json()
-                throw new Error(errorData.error?.message || "Failed to add model")
+                throw new Error(errorData.error || "Failed to add model")
             }
 
             const result = await response.json()
