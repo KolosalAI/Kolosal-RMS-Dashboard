@@ -37,6 +37,7 @@ export const apiConfig = {
       parseXlsx: '/parse_xlsx',
       parsePptx: '/parse_pptx',
       parseHtml: '/parse_html',
+      models: '/models',
     }
   },
 

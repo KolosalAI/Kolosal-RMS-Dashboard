@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChart3, FileText, Search, Upload, BookOpen, Building2 } from "lucide-react"
+import { BarChart3, FileText, Search, Upload, BookOpen, Building2, Settings } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -36,6 +36,11 @@ const menuItems = [
     title: "Retrieve",
     url: "/retrieve",
     icon: Search,
+  },
+  {
+    title: "Engine Configuration",
+    url: "/engines",
+    icon: Settings,
   },
   {
     title: "Documentation",
